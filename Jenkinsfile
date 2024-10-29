@@ -61,5 +61,26 @@ pipeline {
                 }
             }
         }
+        
+        stage('Cleanup') {
+            steps {
+                script {
+                    // Add any cleanup commands here if needed
+                    echo 'Cleanup stage - if needed'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'This will always run after the pipeline finishes'
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
     }
 }
