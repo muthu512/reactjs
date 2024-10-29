@@ -45,7 +45,13 @@ pipeline {
                 script {
                     def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
                     dir(projectDir) {
-                        bat 'npm run build || exit 1'
+                        // Set NODE_OPTIONS for memory limit, modify as needed
+                        bat 'set NODE_OPTIONS=--max-old-space-size=8096'
+                        
+                        // Run the build command with verbose logging
+                        bat 'npm run build -- --verbose || exit 1'
+                        
+                        // List the contents of the build directory
                         bat 'dir build'
                     }
                 }
