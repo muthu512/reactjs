@@ -1,18 +1,15 @@
 pipeline {
     agent any
 
+    options {
+        timeout(time: 120, unit: 'MINUTES') // 2-hour timeout
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+    }
+
     stages {
         stage('Checkout SCM') {
             steps {
-                script {
-                    checkout scm
-                }
-            }
-        }
-
-        stage('Clone Repository') {
-            steps {
-                git credentialsId: 'muthu512', url: 'https://github.com/muthu512/reactjs.git', branch: 'master'
+                git credentialsId: 'muthu512', url: 'https://github.com/muthu512/reactjs.git', branch: 'main'
             }
         }
 
@@ -24,7 +21,7 @@ pipeline {
             }
         }
 
-        stage('Check for package.json') {
+        stage('Prepare Project') {
             steps {
                 script {
                     def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
@@ -42,7 +39,7 @@ pipeline {
                     dir(projectDir) {
                         bat 'node -v'
                         bat 'npm -v'
-                        bat 'npm install || exit 1'
+                        bat 'npm install --audit --force'
                     }
                 }
             }
@@ -50,16 +47,26 @@ pipeline {
 
         stage('Optimized Build React App') {
             steps {
-                dir("C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui") {
-                    script {
-                        // Increase memory allocation
-                        bat 'set NODE_OPTIONS=--max-old-space-size=8192'
-                        
-                        // Clean install dependencies
-                        bat 'npm ci'
-                        
-                        // Run build with optimized memory
-                        bat 'npm run build || exit 1'
+                timeout(time: 30, unit: 'MINUTES') {
+                    dir("C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui") {
+                        script {
+                            try {
+                                // Clean node_modules
+                                bat 'rmdir /S /Q node_modules'
+                                
+                                // Install dependencies with force flag
+                                bat 'npm ci --force'
+                                
+                                // Set NODE_OPTIONS
+                                bat 'set NODE_OPTIONS=--max-old-space-size=16384'
+                                
+                                // Build with optimized memory
+                                bat 'npm run build || exit 1'
+                            } catch (Exception e) {
+                                echo "Build failed: ${e.message}"
+                                currentBuild.result = 'FAILED'
+                            }
+                        }
                     }
                 }
             }
@@ -90,7 +97,8 @@ pipeline {
         stage('Cleanup') {
             steps {
                 script {
-                    echo 'Cleanup stage - if needed'
+                    // Remove unnecessary files
+                    bat 'rmdir /S /Q C:\\Users\\Dell-Lap\\.jenkins\\workspace\\react js@2\\node_modules'
                 }
             }
         }
@@ -105,6 +113,9 @@ pipeline {
         }
         failure {
             echo 'Pipeline failed!'
+        }
+        unstable {
+            echo 'Pipeline unstable!'
         }
     }
 }
