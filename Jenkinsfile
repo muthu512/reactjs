@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     // Set the project directory where package.json is located
-                    def projectDir = "C:\Users\Dell-Lap\Downloads\login360ui\login360ui"
+                    def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
                     
                     // Navigate to the project directory and check for package.json
                     dir(projectDir) {
@@ -34,7 +34,7 @@ pipeline {
             steps {
                 script {
                     // Set the project directory where package.json is located
-                    def projectDir = "C:\Users\Dell-Lap\Downloads\login360ui\login360ui"
+                    def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
                     
                     // Navigate to the project directory for installation
                     dir(projectDir) {
@@ -53,7 +53,7 @@ pipeline {
             steps {
                 script {
                     // Set the project directory where package.json is located
-                    def projectDir = "C:\Users\Dell-Lap\Downloads\login360ui\login360ui"
+                    def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
                     
                     // Navigate to the project directory for building
                     dir(projectDir) {
