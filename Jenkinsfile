@@ -5,8 +5,7 @@ pipeline {
         stage('Checkout SCM') {
             steps {
                 script {
-                    // Checkout the code from GitHub
-                    checkout scm                                                             
+                    checkout scm
                 }
             }
         }
@@ -49,11 +48,17 @@ pipeline {
             }
         }
 
-        stage('Build React App') {
+        stage('Optimized Build React App') {
             steps {
-                dir("C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui") { 
+                dir("C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui") {
                     script {
-                        bat 'set NODE_OPTIONS=--max-old-space-size=8096'
+                        // Increase memory allocation
+                        bat 'set NODE_OPTIONS=--max-old-space-size=8192'
+                        
+                        // Clean install dependencies
+                        bat 'npm ci'
+                        
+                        // Run build with optimized memory
                         bat 'npm run build || exit 1'
                     }
                 }
@@ -63,7 +68,6 @@ pipeline {
         stage('Archive Artifacts') {
             steps {
                 script {
-                    // Archive the build artifacts (optional)
                     archiveArtifacts artifacts: 'build/**', allowEmptyArchive: true
                 }
             }
@@ -73,7 +77,7 @@ pipeline {
             steps {
                 script {
                     def tomcatDir = "C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\webapps"
-                    def appName = "my-react-app" // Replace with your desired app name
+                    def appName = "my-react-app"
                     def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
 
                     bat "if not exist \"${tomcatDir}\\${appName}\" mkdir \"${tomcatDir}\\${appName}\""
