@@ -84,7 +84,7 @@ pipeline {
             steps {
                 script {
                     def tomcatDir = "C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\webapps"
-                    def appName = "my-react-app"
+                    def appName = "login360ui"
                     def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
 
                     bat "if not exist \"${tomcatDir}\\${appName}\" mkdir \"${tomcatDir}\\${appName}\""
