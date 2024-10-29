@@ -2,6 +2,15 @@ pipeline {
     agent any
 
     stages {
+        stage('Checkout SCM') {
+            steps {
+                script {
+                    // Checkout the code from GitHub
+                    checkout scm                                                             
+                }
+            }
+        }
+
         stage('Clone Repository') {
             steps {
                 git credentialsId: 'muthu512', url: 'https://github.com/muthu512/reactjs.git', branch: 'master'
@@ -47,6 +56,15 @@ pipeline {
                         bat 'set NODE_OPTIONS=--max-old-space-size=8096'
                         bat 'npm run build || exit 1'
                     }
+                }
+            }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                script {
+                    // Archive the build artifacts (optional)
+                    archiveArtifacts artifacts: 'build/**', allowEmptyArchive: true
                 }
             }
         }
