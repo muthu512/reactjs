@@ -42,12 +42,10 @@ pipeline {
 
         stage('Build React App') {
             steps {
-                script {
-                    def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
-                    dir(projectDir) {
+                dir("C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui") { 
+                    script {
                         bat 'set NODE_OPTIONS=--max-old-space-size=8096'
-                        bat 'npm run build -- --verbose || exit 1'
-                        bat 'dir build'
+                        bat 'npm run build || exit 1'
                     }
                 }
             }
@@ -56,18 +54,12 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 script {
-                    // Define Tomcat webapps directory
                     def tomcatDir = "C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\webapps"
                     def appName = "my-react-app" // Replace with your desired app name
                     def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
 
-                    // Create the app directory in Tomcat if it doesn't exist
                     bat "if not exist \"${tomcatDir}\\${appName}\" mkdir \"${tomcatDir}\\${appName}\""
-
-                    // Copy the build files to the Tomcat webapps directory
                     bat "xcopy /S /I /Y \"${projectDir}\\build\\*\" \"${tomcatDir}\\${appName}\\\""
-                    
-                    // List the contents of the deployed app directory
                     bat "dir \"${tomcatDir}\\${appName}\""
                 }
             }
