@@ -45,33 +45,37 @@ pipeline {
                 script {
                     def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
                     dir(projectDir) {
-                        // Set NODE_OPTIONS for memory limit, modify as needed
                         bat 'set NODE_OPTIONS=--max-old-space-size=8096'
-                        
-                        // Run the build command with verbose logging
                         bat 'npm run build -- --verbose || exit 1'
-                        
-                        // List the contents of the build directory
                         bat 'dir build'
                     }
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Tomcat') {
             steps {
                 script {
-                    bat 'if not exist "C:\\Users\\Dell-Lap\\Downloads\\node\\" mkdir "C:\\Users\\Dell-Lap\\Downloads\\node\\"'
-                    bat 'xcopy /S /I /Y "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui\\build\\*" "C:\\Users\\Dell-Lap\\Downloads\\node\\"'
-                    bat 'dir "C:\\Users\\Dell-Lap\\Downloads\\node\\"'
+                    // Define Tomcat webapps directory
+                    def tomcatDir = "C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\webapps"
+                    def appName = "my-react-app" // Replace with your desired app name
+                    def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
+
+                    // Create the app directory in Tomcat if it doesn't exist
+                    bat "if not exist \"${tomcatDir}\\${appName}\" mkdir \"${tomcatDir}\\${appName}\""
+
+                    // Copy the build files to the Tomcat webapps directory
+                    bat "xcopy /S /I /Y \"${projectDir}\\build\\*\" \"${tomcatDir}\\${appName}\\\""
+                    
+                    // List the contents of the deployed app directory
+                    bat "dir \"${tomcatDir}\\${appName}\""
                 }
             }
         }
-        
+
         stage('Cleanup') {
             steps {
                 script {
-                    // Add any cleanup commands here if needed
                     echo 'Cleanup stage - if needed'
                 }
             }
