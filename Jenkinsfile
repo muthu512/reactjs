@@ -21,7 +21,7 @@ pipeline {
             steps {
                 script {
                     // Install npm dependencies
-                    bat "${NODE_HOME}\\npm install"
+                    bat "\"${NODE_HOME}\\npm\" install"
                 }
             }
         }
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     // Build the React application
-                    bat "${NODE_HOME}\\npm run build"
+                    bat "\"${NODE_HOME}\\npm\" run build"
                 }
             }
         }
