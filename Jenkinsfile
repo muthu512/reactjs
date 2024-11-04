@@ -87,8 +87,20 @@ pipeline {
                     def appName = "login360ui"
                     def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
 
+                    // Check if the build folder exists and contains files
+                    bat "if not exist \"${projectDir}\\build\" (echo Build directory does not exist && exit 1)"
+                    bat "dir \"${projectDir}\\build\""
+
+                    // If the build directory exists but is empty, display an error and exit
+                    bat "if not exist \"${projectDir}\\build\\*\" (echo No files in build directory && exit 1)"
+
+                    // Create the application directory if it does not exist
                     bat "if not exist \"${tomcatDir}\\${appName}\" mkdir \"${tomcatDir}\\${appName}\""
+
+                    // Copy files from build directory to Tomcat
                     bat "xcopy /S /I /Y \"${projectDir}\\build\\*\" \"${tomcatDir}\\${appName}\\\""
+
+                    // Verify deployment by listing files in the Tomcat app directory
                     bat "dir \"${tomcatDir}\\${appName}\""
                 }
             }
