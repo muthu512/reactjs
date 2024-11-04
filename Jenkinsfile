@@ -6,6 +6,12 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
     }
 
+    environment {
+        PROJECT_DIR = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
+        TOMCAT_DIR = "C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\webapps"
+        APP_NAME = "login360ui"
+    }
+
     stages {
         stage('Checkout SCM') {
             steps {
@@ -34,8 +40,7 @@ pipeline {
         stage('Prepare Project') {
             steps {
                 script {
-                    def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
-                    dir(projectDir) {
+                    dir(PROJECT_DIR) {
                         bat 'if exist "package.json" (echo package.json exists) else (echo package.json not found && exit 1)'
                     }
                 }
@@ -45,10 +50,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
-                    dir(projectDir) {
-                        bat 'node -v'
-                        bat 'npm -v'
+                    dir(PROJECT_DIR) {
                         bat 'npm install --audit --force || exit 1'
                     }
                 }
@@ -58,7 +60,7 @@ pipeline {
         stage('Optimized Build React App') {
             steps {
                 timeout(time: 30, unit: 'MINUTES') {
-                    dir("C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui") {
+                    dir(PROJECT_DIR) {
                         script {
                             try {
                                 // Clean node_modules
@@ -93,25 +95,21 @@ pipeline {
         stage('Deploy to Tomcat') {
             steps {
                 script {
-                    def tomcatDir = "C:\\Program Files\\Apache Software Foundation\\Tomcat 9.0\\webapps"
-                    def appName = "login360ui"
-                    def projectDir = "C:\\Users\\Dell-Lap\\Downloads\\login360ui\\login360ui"
-
                     // Check if the build folder exists and contains files
-                    bat "if not exist \"${projectDir}\\build\" (echo Build directory does not exist && exit 1)"
-                    bat "dir \"${projectDir}\\build\""
+                    bat "if not exist \"${PROJECT_DIR}\\build\" (echo Build directory does not exist && exit 1)"
+                    bat "dir \"${PROJECT_DIR}\\build\""
 
                     // If the build directory exists but is empty, display an error and exit
-                    bat "if not exist \"${projectDir}\\build\\*\" (echo No files in build directory && exit 1)"
+                    bat "if not exist \"${PROJECT_DIR}\\build\\*\" (echo No files in build directory && exit 1)"
 
                     // Create the application directory if it does not exist
-                    bat "if not exist \"${tomcatDir}\\${appName}\" mkdir \"${tomcatDir}\\${appName}\""
+                    bat "if not exist \"${TOMCAT_DIR}\\${APP_NAME}\" mkdir \"${TOMCAT_DIR}\\${APP_NAME}\""
 
                     // Copy files from build directory to Tomcat
-                    bat "xcopy /S /I /Y \"${projectDir}\\build\\*\" \"${tomcatDir}\\${appName}\\\""
+                    bat "xcopy /S /I /Y \"${PROJECT_DIR}\\build\\*\" \"${TOMCAT_DIR}\\${APP_NAME}\\\""
 
                     // Verify deployment by listing files in the Tomcat app directory
-                    bat "dir \"${tomcatDir}\\${appName}\""
+                    bat "dir \"${TOMCAT_DIR}\\${APP_NAME}\""
                 }
             }
         }
@@ -119,7 +117,7 @@ pipeline {
         stage('Cleanup') {
             steps {
                 script {
-                    // Remove unnecessary files
+                    // Optionally remove unnecessary files
                     bat 'rmdir /S /Q C:\\Users\\Dell-Lap\\.jenkins\\workspace\\react js@2\\node_modules'
                 }
             }
