@@ -38,4 +38,32 @@ pipeline {
             }
         }
 
-        stage('
+        stage('Deploy to Tomcat') {
+            steps {
+                script {
+                    def deployDir = "${TOMCAT_HOME}\\webapps\\${REACT_APP_NAME}"
+
+                    // Ensure the deployment directory exists, and remove old deployment if it does
+                    bat """
+                    if exist "${deployDir}" (
+                        rmdir /s /q "${deployDir}"
+                    )
+                    mkdir "${deployDir}"
+                    """
+
+                    // Copy the build files to Tomcat webapps directory
+                    bat "xcopy /E /I /Y ${BUILD_DIR}\\* ${deployDir}\\"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Deployment failed.'
+        }
+    }
+}
