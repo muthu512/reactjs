@@ -13,7 +13,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the repository
-                git 'https://github.com/muthu512/reactjs.git' // Replace with your repo
+                git url: 'https://github.com/muthu512/reactjs.git', branch: 'master', credentialsId: 'muthu512'
             }
         }
 
@@ -22,6 +22,10 @@ pipeline {
                 script {
                     // Install npm dependencies
                     bat "\"${NODE_HOME}\\npm\" install"
+                    
+                    // Update Vite and other dependencies
+                    bat "\"${NODE_HOME}\\npm\" install vite@latest"
+                    bat "\"${NODE_HOME}\\npm\" update"
                 }
             }
         }
@@ -29,8 +33,8 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Build the React application
-                    bat "\"${NODE_HOME}\\npm\" run build"
+                    // Set memory and debug options and run the build
+                    bat "set NODE_OPTIONS=--max-old-space-size=4096 && set DEBUG=vite:* && \"${NODE_HOME}\\npm\" run build"
                 }
             }
         }
