@@ -59,7 +59,7 @@ pipeline {
 
         stage('Optimized Build React App') {
             steps {
-                timeout(time: 30, unit: 'MINUTES') {
+                timeout(time: 60, unit: 'MINUTES') {
                     dir(PROJECT_DIR) {
                         script {
                             try {
