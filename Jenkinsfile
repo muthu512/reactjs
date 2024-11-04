@@ -13,6 +13,16 @@ pipeline {
             }
         }
 
+        stage('Check Node and npm Versions') {
+            steps {
+                script {
+                    // Check if Node.js and npm are installed
+                    bat 'node -v || exit 1'
+                    bat 'npm -v || exit 1'
+                }
+            }
+        }
+
         stage('Check Environment Variables') {
             steps {
                 script {
@@ -39,7 +49,7 @@ pipeline {
                     dir(projectDir) {
                         bat 'node -v'
                         bat 'npm -v'
-                        bat 'npm install --audit --force'
+                        bat 'npm install --audit --force || exit 1'
                     }
                 }
             }
@@ -55,9 +65,9 @@ pipeline {
                                 bat 'rmdir /S /Q node_modules'
                                 
                                 // Install dependencies with force flag
-                                bat 'npm ci --force'
+                                bat 'npm ci --force || exit 1'
                                 
-                                // Set NODE_OPTIONS
+                                // Set NODE_OPTIONS for memory optimization
                                 bat 'set NODE_OPTIONS=--max-old-space-size=16384'
                                 
                                 // Build with optimized memory
