@@ -38,6 +38,26 @@ pipeline {
             }
         }
 
+        stage('Debug Build Directory') {
+            steps {
+                script {
+                    // List the files in the build directory to debug
+                    bat "dir ${BUILD_DIR}"
+                }
+            }
+        }
+
+        stage('Echo Environment Variables') {
+            steps {
+                script {
+                    echo "NODE_HOME: ${NODE_HOME}"
+                    echo "TOMCAT_HOME: ${TOMCAT_HOME}"
+                    echo "REACT_APP_NAME: ${REACT_APP_NAME}"
+                    echo "BUILD_DIR: ${BUILD_DIR}"
+                }
+            }
+        }
+
         stage('Deploy to Tomcat') {
             steps {
                 script {
@@ -52,7 +72,7 @@ pipeline {
                     """
 
                     // Copy the build files to Tomcat webapps directory
-                    bat "xcopy /E /I /Y ${BUILD_DIR}\\* ${deployDir}\\"
+                    bat "xcopy /E /I /Y \"${BUILD_DIR}\\*\" \"${deployDir}\\\""
                 }
             }
         }
